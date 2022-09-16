@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Component } from "react";
+import "@/styles/index.less";
+import Routers from "@/router";
+import { IntlProvider } from "react-intl";
+import { useLanguage } from "@/locale";
+import ErrorPage from "@/error";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const languagePackage = useLanguage();
+
+    if (!languagePackage) {
+        return null;
+    }
+
+    return (
+        <IntlProvider messages={languagePackage} locale="en">
+            <Routers />
+        </IntlProvider>
+    );
 }
 
-export default App;
+class AppContainer extends Component {
+    state = {
+        isError: false,
+    };
+    render() {
+        if (this.state.isError) {
+            return <ErrorPage />;
+        }
+        return <App />;
+    }
+    componentDidCatch() {
+        this.setState({
+            isError: true,
+        });
+    }
+}
+
+export default AppContainer;
